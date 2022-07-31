@@ -1,5 +1,6 @@
 // App.js
 import React, { useEffect, useState } from "react";
+import { useReward } from 'react-rewards';
 import "./App.css";
 /* ethers 変数を使えるようにする*/
 import { ethers } from "ethers";
@@ -7,6 +8,7 @@ import { ethers } from "ethers";
 import abi from "./utils/WavePortal.json";
 
 const App = () => {
+  const { reward, isAnimating } = useReward('rewardId', 'confetti');
   /* ユーザーのパブリックウォレットを保存するために使用する状態変数を定義 */
   const [currentAccount, setCurrentAccount] = useState("");
   /* ユーザーのメッセージを保存するために使用する状態変数を定義 */
@@ -133,6 +135,7 @@ const App = () => {
   };
   /* waveの回数をカウントする関数を実装 */
   const wave = async () => {
+    
     try {
       const { ethereum } = window;
       if (ethereum) {
@@ -164,6 +167,7 @@ const App = () => {
         if (contractBalance_post.lt(contractBalance)) {
           /* 減っていたら下記を出力 */
           console.log("User won ETH!");
+          reward();
         } else {
           console.log("User didn't win ETH.");
         }
@@ -215,7 +219,8 @@ const App = () => {
         )}
         {/* waveボタンにwave関数を連動 */}
         {currentAccount && (
-          <button className="waveButton" onClick={wave}>
+          <button className="waveButton" disabled={isAnimating} onClick={wave}>
+            <span id="rewardId" />
             Wave at Me
           </button>
         )}
